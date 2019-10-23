@@ -3,7 +3,10 @@ package com.challenge.roomBooking.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -24,7 +27,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Entity
 @Table(name = "rooms")
+@Access(AccessType.FIELD)
 public class RoomEntity {
 
 	@Id
@@ -37,7 +42,7 @@ public class RoomEntity {
 	private RoomType roomType;
 	
 	@Column(name = "booked_days")
-	private List<Integer> bookedDays;
+	private String bookedDays;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
 	private List<BookEntity> books = new ArrayList<>();

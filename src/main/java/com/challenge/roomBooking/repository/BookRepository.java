@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.challenge.roomBooking.entity.BookEntity;
 
 @Repository
-public interface BookRepository  extends JpaRepository<BookEntity, Long> {
+public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
 	List<BookEntity> findAll();
-	
+
 }

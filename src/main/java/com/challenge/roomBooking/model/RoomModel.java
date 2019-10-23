@@ -1,7 +1,5 @@
 package com.challenge.roomBooking.model;
 
-import java.util.List;
-
 import com.challenge.roomBooking.enums.RoomType;
 
 import lombok.Builder;
@@ -17,6 +15,6 @@ public class RoomModel {
 	
 	private Long id;
 	private RoomType type;
-	private List<Integer> bookedDays;
+	private String bookedDays;
 
 }
