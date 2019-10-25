@@ -1,5 +1,6 @@
 package com.challenge.roomBooking.utils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -11,6 +12,23 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DateUtils {
+	
+	/**
+	 * Validates whether the date is in the format ( dd/MM/yyyy )
+	 * 
+	 * @param dateStr
+	 * @return true if it is in the format dd/MM/yyyy
+	 */
+	public static Boolean isValidDateFormat(String dateStr) {
+		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        sdf.setLenient(false);
+        try {
+            sdf.parse(dateStr);
+        } catch (ParseException e) {
+            return false;
+        }
+		return true;
+    }
 
 	/**
 	 * Converts a String to Date
@@ -36,7 +54,7 @@ public class DateUtils {
 	 * @param checkout
 	 * @return true if the check-in is before the check-out or at the same day
 	 */
-	public static Boolean isValidDate(String checkin, String checkout) {
+	public static Boolean isValidPeriod(String checkin, String checkout) {
 		Date dateCheckIn = convertStringToDate(checkin);
 		Date dateCheckOut = convertStringToDate(checkout);
 		
@@ -49,10 +67,11 @@ public class DateUtils {
 	}
 
 	/**
+	 * Returns all days between two dates
 	 * 
 	 * @param checkin
 	 * @param checkout
-	 * @return
+	 * @return List with the days between two dates
 	 */
 	public static List<LocalDate> getDatesBetween(Date checkin, Date checkout) {
 		LocalDate startDate = convertToLocalDate(checkin);
@@ -63,9 +82,10 @@ public class DateUtils {
 	}
 
 	/**
+	 * Converts a Date to LocalDate (without time)
 	 * 
 	 * @param dateToConvert
-	 * @return
+	 * @return LocalDate
 	 */
 	public static LocalDate convertToLocalDate(Date dateToConvert) {
 		return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

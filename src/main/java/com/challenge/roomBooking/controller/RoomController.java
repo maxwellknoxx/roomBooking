@@ -31,13 +31,7 @@ public class RoomController {
 	private MapValidationErrorService mapValidationErrorService;
 
 	@GetMapping(path = "v1/room/rooms")
-	public ResponseEntity<?> findAll(@Valid @RequestBody RoomEntity entity, BindingResult result) {
-
-		ResponseEntity<?> errorMap = mapValidationErrorService.mapValidation(result);
-		if (errorMap != null) {
-			return errorMap;
-		}
-
+	public ResponseEntity<?> findAll() {
 		List<RoomModel> rooms = service.findAll();
 		if (rooms == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
@@ -47,7 +41,13 @@ public class RoomController {
 	}
 
 	@PostMapping(path = "v1/room/rooms")
-	public ResponseEntity<?> addRoom(@Valid @RequestBody RoomEntity entity) {
+	public ResponseEntity<?> addRoom(@Valid @RequestBody RoomEntity entity, BindingResult result) {
+
+		ResponseEntity<?> errorMap = mapValidationErrorService.mapValidation(result);
+		if (errorMap != null) {
+			return errorMap;
+		}
+
 		RoomModel room = service.save(entity);
 		if (room == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
@@ -66,7 +66,7 @@ public class RoomController {
 		return new ResponseEntity<RoomModel>(room, HttpStatus.OK);
 	}
 
-	@GetMapping(path = "v1/room/roomsByType")
+	@PostMapping(path = "v1/room/roomsByType")
 	public ResponseEntity<?> getRoomByType(@Valid @RequestBody RoomEntity entity) {
 		List<RoomModel> rooms = service.getRoomByType(entity.getRoomType());
 		if (rooms == null) {

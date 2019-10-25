@@ -19,7 +19,7 @@ public class ServicesValidation {
 	private BookingRepository bookingRepository;
 
 	/**
-	 * Validate whether the room exists
+	 * Validates whether the room exists
 	 * 
 	 * @param id - Room Id
 	 * @return true or false
@@ -33,9 +33,10 @@ public class ServicesValidation {
 	}
 
 	/**
+	 * Validates whether the room is available in the desire booked day
 	 * 
-	 * @param id
-	 * @return
+	 * @param id - Room id
+	 * @return 'OK' if the room is available or a message about the next available day
 	 */
 	public String isRoomAvailable(Long id, String checkin) {
 		BookingEntity entity = bookingRepository.findByRoomIdAndCheckin(id, checkin);
@@ -47,12 +48,25 @@ public class ServicesValidation {
 	}
 
 	/**
+	 * Validates whether the date is in the correct format ( dd/MM/yyyy )
 	 * 
-	 * @param entity
-	 * @return
+	 * @param checkin
+	 * @param checkout
+	 * @return true if it is in the format dd/MM/yyyy
+	 */
+	public Boolean isValidDateFormat(String checkin, String checkout) {
+		return DateUtils.isValidDateFormat(checkin) && DateUtils.isValidDateFormat(checkout);
+	}
+
+	/**
+	 * Compares whether the check-in and check-out date is valid
+	 * 
+	 * @param checkin
+	 * @param checkout
+	 * @return true if the check-in is before the check-out or at the same day
 	 */
 	public Boolean isValidPeriod(BookingEntity entity) {
-		return DateUtils.isValidDate(entity.getCheckin(), entity.getCheckout());
+		return DateUtils.isValidPeriod(entity.getCheckin(), entity.getCheckout());
 	}
 
 }

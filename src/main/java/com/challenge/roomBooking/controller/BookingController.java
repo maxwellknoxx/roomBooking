@@ -98,6 +98,11 @@ public class BookingController {
 		if (!isValidRoom(entity)) {
 			return "Room " + roomId + " is not valid!";
 		}
+		
+		
+		if(!isValidDateFormat(entity)) {
+			return "Please, set the date as dd/MM/yyyy";
+		}
 
 		if (!isValidPeriod(entity)) {
 			return "Check-in cannot be later than check-out";
@@ -140,6 +145,15 @@ public class BookingController {
 	 */
 	public Boolean isValidPeriod(BookingEntity entity) {
 		return servicesValidation.isValidPeriod(entity);
+	}
+	
+	/**
+	 *  * Validates whether the date is in the format ( dd/MM/yyyy )
+	 * @param entity
+	 * @return true if both dates are in the format ( dd/MM/yyyy )
+	 */
+	public Boolean isValidDateFormat(BookingEntity entity) {
+		return servicesValidation.isValidDateFormat(entity.getCheckin(), entity.getCheckout());
 	}
 
 }
