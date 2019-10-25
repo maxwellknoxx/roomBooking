@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.challenge.roomBooking.entity.RoomEntity;
-import com.challenge.roomBooking.enums.RoomType;
 import com.challenge.roomBooking.model.RoomModel;
 import com.challenge.roomBooking.service.impl.MapValidationErrorService;
 import com.challenge.roomBooking.service.impl.RoomServiceImpl;
@@ -68,8 +67,8 @@ public class RoomController {
 	}
 
 	@GetMapping(path = "v1/room/roomsByType")
-	public ResponseEntity<?> getRoomByType(@Valid @RequestBody RoomType type) {
-		List<RoomModel> rooms = service.getRoomByType(type);
+	public ResponseEntity<?> getRoomByType(@Valid @RequestBody RoomEntity entity) {
+		List<RoomModel> rooms = service.getRoomByType(entity.getRoomType());
 		if (rooms == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}

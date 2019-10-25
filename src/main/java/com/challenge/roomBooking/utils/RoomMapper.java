@@ -13,14 +13,14 @@ import com.challenge.roomBooking.model.RoomModel;
 public class RoomMapper {
 
 	public static RoomModel getModel(RoomEntity entity) {
-		return RoomModel.builder().id(entity.getId()).type(entity.getRoomType()).bookedDays(entity.getBookedDays())
-				.build();
+		return RoomModel.builder().id(entity.getId()).type(entity.getRoomType())
+				.books(BookMapper.getListModel(entity.getBooks())).build();
 	}
 
 	public static List<RoomModel> getListModel(List<RoomEntity> entities) {
 		return entities
 				.stream().filter(Objects::nonNull).map(entity -> RoomModel.builder().id(entity.getId())
-						.type(entity.getRoomType()).bookedDays(entity.getBookedDays()).build())
+						.type(entity.getRoomType()).books(BookMapper.getListModel(entity.getBooks())).build())
 				.collect(Collectors.toList());
 
 	}

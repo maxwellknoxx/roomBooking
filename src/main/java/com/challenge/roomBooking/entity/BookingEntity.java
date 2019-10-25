@@ -17,8 +17,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "books")
-public class BookEntity {
+@Table(name = "bookings")
+public class BookingEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,10 @@ public class BookEntity {
 	@JoinColumn(name = "room_id")
 	private RoomEntity room;
 	
-	@Column(name = "booked_days")
-	private String bookedDays;
+	@Column(name = "check_in")
+	private String checkin;
+	
+	@Column(name = "check_out")
+	private String checkout;
 
 }

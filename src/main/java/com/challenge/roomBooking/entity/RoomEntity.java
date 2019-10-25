@@ -16,9 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.NaturalId;
-
 import com.challenge.roomBooking.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -37,14 +36,11 @@ public class RoomEntity {
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
-	@NaturalId
 	@Column(name = "room_type")
 	private RoomType roomType;
 	
-	@Column(name = "booked_days")
-	private String bookedDays;
-	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
-	private List<BookEntity> books = new ArrayList<>();
+	@JsonIgnore
+	private List<BookingEntity> books = new ArrayList<>();
 	
 }
