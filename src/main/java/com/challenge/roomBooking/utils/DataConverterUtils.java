@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 
+import com.challenge.roomBooking.entity.RoomEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class DataConverterUtils {
 
-	public static String toJSON(Object entity) {
+	public static String toJSON(RoomEntity entity) {
 		ObjectMapper Obj = new ObjectMapper();
 
 		try {
