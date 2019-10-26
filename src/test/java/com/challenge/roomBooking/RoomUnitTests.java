@@ -1,54 +1,99 @@
 package com.challenge.roomBooking;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.challenge.roomBooking.controller.RoomController;
+import com.challenge.roomBooking.entity.RoomEntity;
+import com.challenge.roomBooking.enums.RoomType;
+import com.challenge.roomBooking.model.RoomModel;
+import com.challenge.roomBooking.service.impl.RoomServiceImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 class RoomUnitTests {
 
 	@InjectMocks
-	private RoomController roomController;
+	RoomController roomController;
 
-	@Autowired
-	private MockMvc mockMvc;
+	@Mock
+	RoomServiceImpl service;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
 	}
 
+	
 	@Test
-	public void shouldReturnStatusOK() throws Exception {
-		this.mockMvc.perform(get("/api/v1/room/rooms")).andExpect(status().isOk())
-				.andExpect(content().contentType("application/json"));
+	public void shouldGetRooms() throws Exception {
+		when(service.findAll()).thenReturn(getRooms());
+
+		ResponseEntity<?> response = roomController.findAll();
+
+		assertNotNull(response);
+		
+		@SuppressWarnings("unchecked")
+		List<RoomModel> rooms = (List<RoomModel>) response.getBody();
+
+		assertEquals(rooms.size(), getRooms().size());
+	}
+	
+	@Test
+	public void shouldGetRoomByType() {
+		when(service.getRoomByType(RoomType.SINGLE)).thenReturn(getRoomsByType());
+		
+		ResponseEntity<?> response = roomController.getRoomByType(getRoomEntity());
+
+		assertNotNull(response);
+		
+		@SuppressWarnings("unchecked")
+		List<RoomModel> rooms = (List<RoomModel>) response.getBody();
+
+		assertEquals(RoomType.SINGLE, rooms.get(0).getType());
 	}
 
-	/*
-	 * @Test public void shouldReturnRoomByType() throws Exception { RoomEntity
-	 * entity = new RoomEntity(); entity.setId(1L);
-	 * entity.setRoomType(RoomType.SINGLE);
-	 * 
-	 * mockMvc.perform(post("/api/v1/room/roomsByType",
-	 * entity)).andExpect(status().isOk()); }
-	 */
+	public List<RoomModel> getRooms() {
+		List<RoomModel> list = new ArrayList<>();
+		list.add(RoomModel.builder().id(1L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomModel.builder().id(2L).type(RoomType.DOUBLE).books(null).build());
+		list.add(RoomModel.builder().id(3L).type(RoomType.SUITE).books(null).build());
+		return list;
+	}
+	
+	public List<RoomModel> getRoomsByType() {
+		List<RoomModel> list = new ArrayList<>();
+		list.add(RoomModel.builder().id(1L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomModel.builder().id(4L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomModel.builder().id(5L).type(RoomType.SINGLE).books(null).build());
+		return list;
+	}
+
+	public RoomModel getRoom() {
+		return RoomModel.builder().id(1L).type(RoomType.SINGLE).books(null).build();
+	}
+
+	public RoomEntity getRoomEntity() {
+		RoomEntity entity = new RoomEntity();
+		entity.setId(1L);
+		entity.setRoomType(RoomType.SINGLE);
+		return entity;
+	}
+	
 	@Test
 	void contextLoads() {
 	}

@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.challenge.roomBooking.entity.RoomEntity;
 import com.challenge.roomBooking.model.RoomModel;
-import com.challenge.roomBooking.service.impl.MapValidationErrorService;
 import com.challenge.roomBooking.service.impl.RoomServiceImpl;
 
 @RestController
@@ -26,9 +24,6 @@ public class RoomController {
 
 	@Autowired
 	private RoomServiceImpl service;
-
-	@Autowired
-	private MapValidationErrorService mapValidationErrorService;
 
 	@GetMapping(path = "v1/room/rooms")
 	public ResponseEntity<?> findAll() {
@@ -41,16 +36,11 @@ public class RoomController {
 	}
 
 	@PostMapping(path = "v1/room/rooms")
-	public ResponseEntity<?> addRoom(@Valid @RequestBody RoomEntity entity, BindingResult result) {
-
-		ResponseEntity<?> errorMap = mapValidationErrorService.mapValidation(result);
-		if (errorMap != null) {
-			return errorMap;
-		}
+	public ResponseEntity<?> addRoom(@Valid @RequestBody RoomEntity entity) {
 
 		RoomModel room = service.save(entity);
 		if (room == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+			return new ResponseEntity<Boolean>(false, HttpStatus.CREATED);
 		}
 
 		return new ResponseEntity<RoomModel>(room, HttpStatus.OK);
