@@ -40,10 +40,10 @@ public class RoomController {
 
 		RoomModel room = service.save(entity);
 		if (room == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.CREATED);
+			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<RoomModel>(room, HttpStatus.OK);
+		return new ResponseEntity<RoomModel>(room, HttpStatus.CREATED);
 	}
 
 	@PutMapping(path = "v1/room/rooms")

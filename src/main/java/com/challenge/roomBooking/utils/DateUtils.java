@@ -19,11 +19,11 @@ public class DateUtils {
 	 * @param dateStr
 	 * @return true if it is in the format dd/MM/yyyy
 	 */
-	public static Boolean isValidDateFormat(String dateStr) {
+	public static Boolean isValidDateFormat(String stringDate) {
 		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         sdf.setLenient(false);
         try {
-            sdf.parse(dateStr);
+            sdf.parse(stringDate);
         } catch (ParseException e) {
             return false;
         }

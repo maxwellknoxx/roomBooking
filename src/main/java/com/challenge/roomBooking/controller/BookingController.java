@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.challenge.roomBooking.entity.BookingEntity;
 import com.challenge.roomBooking.model.BookingModel;
 import com.challenge.roomBooking.service.impl.BookingServiceImpl;
-import com.challenge.roomBooking.service.impl.MapValidationErrorService;
 import com.challenge.roomBooking.service.impl.ServicesValidation;
 
 @RestController
@@ -33,17 +31,8 @@ public class BookingController {
 	@Autowired
 	private ServicesValidation servicesValidation;
 
-	@Autowired
-	private MapValidationErrorService mapValidationErrorService;
-
 	@PostMapping(path = "v1/booking/booking")
-	public ResponseEntity<?> booking(@Valid @RequestBody BookingEntity entity, BindingResult result) {
-
-		ResponseEntity<?> errorMap = mapValidationErrorService.mapValidation(result);
-		if (errorMap != null) {
-			return errorMap;
-		}
-
+	public ResponseEntity<?> booking(@Valid @RequestBody BookingEntity entity) {
 		String validationMessage = validations(entity);
 		if (!validationMessage.equals("")) {
 			return new ResponseEntity<String>(validationMessage, HttpStatus.OK);
@@ -53,7 +42,7 @@ public class BookingController {
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		return new ResponseEntity<BookingModel>(booking, HttpStatus.OK);
+		return new ResponseEntity<BookingModel>(booking, HttpStatus.CREATED);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
@@ -144,6 +133,7 @@ public class BookingController {
 	 * @return
 	 */
 	public Boolean isValidPeriod(BookingEntity entity) {
+		System.out.println(entity.toString());
 		return servicesValidation.isValidPeriod(entity);
 	}
 	

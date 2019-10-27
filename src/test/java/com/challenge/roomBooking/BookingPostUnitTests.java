@@ -1,14 +1,12 @@
 package com.challenge.roomBooking;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -22,66 +20,71 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.challenge.roomBooking.controller.RoomController;
+import com.challenge.roomBooking.controller.BookingController;
 import com.challenge.roomBooking.entity.BookingEntity;
 import com.challenge.roomBooking.entity.RoomEntity;
 import com.challenge.roomBooking.enums.RoomType;
-import com.challenge.roomBooking.model.RoomModel;
-import com.challenge.roomBooking.service.impl.RoomServiceImpl;
+import com.challenge.roomBooking.model.BookingModel;
+import com.challenge.roomBooking.service.impl.BookingServiceImpl;
+import com.challenge.roomBooking.service.impl.ServicesValidation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(RoomController.class)
-class RoomPostUnitTests {
+@WebMvcTest(BookingController.class)
+class BookingPostUnitTests {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
-	RoomServiceImpl service;
+	BookingServiceImpl service;
+	
+	@MockBean
+	ServicesValidation servicesValidation;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		RoomController controller = new RoomController();
+		BookingController controller = new BookingController();
 		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 	}
 
 	@Test
-	public void shouldAddRoom() throws Exception {
+	public void shouldBook() throws Exception {
 
-		when(service.save(any(RoomEntity.class))).thenReturn(getRoom());
+		when(service.book(any(BookingEntity.class))).thenReturn(getBooking());
+		when(servicesValidation.isValidRoom(1L)).thenReturn(true);
+		when(servicesValidation.isValidPeriod(getBookingEntity())).thenReturn(true);
+		when(servicesValidation.isValidDateFormat("05/11/2019", "10/11/2019")).thenReturn(true);
+		when(servicesValidation.isRoomAvailable(1L, "05/11/2019")).thenReturn("OK");
 
-		mockMvc.perform(post("/api/v1/room/rooms").contentType(MediaType.APPLICATION_JSON)
-				.content(objectoToJson(getRoomEntity()))).andExpect(status().isCreated())
+		mockMvc.perform(post("/api/v1/booking/booking").contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(objectoToJson(getBookingEntity()))).andExpect(status().isCreated())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
 	}
 
-	public RoomModel getRoom() {
-		return RoomModel.builder().id(1L).type(RoomType.SINGLE).books(null).build();
+	public BookingModel getBooking() {
+		return BookingModel.builder().id(1L).roomId(1L).roomType(RoomType.SINGLE).checkin("05/11/2019")
+				.checkout("10/11/2019").booked_days(null).build();
 	}
 
-	public RoomEntity getRoomEntity() {
-		RoomEntity entity = new RoomEntity();
-		entity.setId(1L);
-		entity.setRoomType(RoomType.SINGLE);
-
+	public BookingEntity getBookingEntity() {
 		BookingEntity booking = new BookingEntity();
 		booking.setId(1L);
-		booking.setRoom(entity);
-		booking.setCheckin("26/10/2019");
-		booking.setCheckout("28/10/2019");
+		booking.setCheckin("05/11/2019");
+		booking.setCheckout("10/11/2019");
 
-		List<BookingEntity> listBooking = new ArrayList<>();
-		listBooking.add(booking);
+		RoomEntity roomEntity = new RoomEntity();
+		roomEntity.setId(1L);
+		roomEntity.setRoomType(RoomType.SINGLE);
 
-		entity.setBooks(listBooking);
+		booking.setRoom(roomEntity);
 
-		return entity;
+		return booking;
 	}
-
-	public String objectoToJson(RoomEntity entity) {
+	
+	public String objectoToJson(BookingEntity entity) {
 		String jsonStr = "";
 		try {
 			ObjectMapper Obj = new ObjectMapper();
