@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.challenge.roomBooking.entity.BookingEntity;
-import com.challenge.roomBooking.model.BookingModel;
+import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.model.BookingDTO;
 import com.challenge.roomBooking.repository.BookingRepository;
 import com.challenge.roomBooking.service.BookingService;
 import com.challenge.roomBooking.utils.BookMapper;
@@ -18,8 +18,8 @@ public class BookingServiceImpl implements BookingService {
 	private BookingRepository repository;
 
 	@Override
-	public List<BookingModel> findAll() {
-		List<BookingEntity> entities = repository.findAll();
+	public List<BookingDTO> findAll() {
+		List<Booking> entities = repository.findAll();
 		if (entities.isEmpty()) {
 			return null;
 		}
@@ -27,8 +27,8 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingModel book(BookingEntity entity) {
-		BookingEntity bookingEntity = repository.save(entity);
+	public BookingDTO book(Booking entity) {
+		Booking bookingEntity = repository.save(entity);
 		if (bookingEntity == null) {
 			return null;
 		}
@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public Boolean cancel(BookingEntity entity) {
+	public Boolean cancel(Booking entity) {
 		try {
 			repository.delete(entity);
 			return true;
@@ -45,16 +45,20 @@ public class BookingServiceImpl implements BookingService {
 		}
 	}
 	
-	public BookingEntity getBookingById(Long id) {
-		BookingEntity entity = repository.findById(id).orElse(null);
-		if(entity == null) {
-			return null;
-		}
-		return entity;
+	public Booking getBookingById(Long id) {
+		return repository.findById(id).orElse(null);
 	}
 	
-	public BookingModel updateBooking(BookingEntity entity) {
-		BookingEntity bookingEntity = repository.save(entity);
+	public BookingDTO getBookingDTOById(Long id) {
+		Booking bookingEntity = repository.findById(id).orElse(null);
+		if (bookingEntity == null) {
+			return null;
+		}
+		return BookMapper.getModel(bookingEntity);
+	}
+	
+	public BookingDTO updateBooking(Booking entity) {
+		Booking bookingEntity = repository.save(entity);
 		if (bookingEntity == null) {
 			return null;
 		}

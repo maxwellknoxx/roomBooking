@@ -5,14 +5,14 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.challenge.roomBooking.entity.RoomEntity;
+import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.enums.RoomType;
 
 @Repository
-public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
+public interface RoomRepository extends JpaRepository<Room, Long> {
 	
-	List<RoomEntity> findAll();
+	List<Room> findAll();
 	
-	List<RoomEntity> findByRoomType(RoomType type);
+	List<Room> findByRoomType(RoomType type);
 	
 }

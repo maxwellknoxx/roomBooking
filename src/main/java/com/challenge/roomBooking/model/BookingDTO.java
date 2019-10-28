@@ -14,7 +14,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-public class BookingModel {
+public class BookingDTO {
 
 	private Long id;
 	private Long roomId;

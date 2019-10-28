@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "bookings")
-public class BookingEntity {
+public class Booking {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class BookingEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "room_id")
-	private RoomEntity room;
+	private Room room;
 	
 	@Column(name = "check_in")
 	private String checkin;

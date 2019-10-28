@@ -29,7 +29,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "rooms")
 @Access(AccessType.FIELD)
-public class RoomEntity {
+public class Room {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +41,6 @@ public class RoomEntity {
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
 	@JsonIgnore
-	private List<BookingEntity> books = new ArrayList<>();
+	private List<Booking> books = new ArrayList<>();
 	
 }

@@ -6,14 +6,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.challenge.roomBooking.entity.BookingEntity;
-import com.challenge.roomBooking.model.BookingModel;
+import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.model.BookingDTO;
 
 @Component
 public class BookMapper {
 
-	public static BookingModel getModel(BookingEntity entity) {
-		return BookingModel.builder().id(entity.getId())
+	public static BookingDTO getModel(Booking entity) {
+		return BookingDTO.builder().id(entity.getId())
 				.roomId(entity.getRoom().getId()).checkin(entity.getCheckin())
 				.roomType(entity.getRoom().getRoomType())
 				.checkout(entity.getCheckout())
@@ -22,9 +22,9 @@ public class BookMapper {
 				.build();
 	}
 
-	public static List<BookingModel> getListModel(List<BookingEntity> entities) {
+	public static List<BookingDTO> getListModel(List<Booking> entities) {
 		return entities.stream().filter(Objects::nonNull)
-				.map(entity -> BookingModel.builder().id(entity.getId())
+				.map(entity -> BookingDTO.builder().id(entity.getId())
 						.roomId(entity.getRoom().getId())
 						.roomType(entity.getRoom().getRoomType())
 						.checkin(entity.getCheckin()).checkout(entity.getCheckout())

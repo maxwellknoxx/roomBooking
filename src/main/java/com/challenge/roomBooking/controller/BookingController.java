@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.challenge.roomBooking.entity.BookingEntity;
-import com.challenge.roomBooking.model.BookingModel;
+import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.model.BookingDTO;
 import com.challenge.roomBooking.service.impl.BookingServiceImpl;
 import com.challenge.roomBooking.service.impl.ServicesValidation;
 
@@ -32,31 +32,40 @@ public class BookingController {
 	private ServicesValidation servicesValidation;
 
 	@PostMapping(path = "v1/booking/booking")
-	public ResponseEntity<?> booking(@Valid @RequestBody BookingEntity entity) {
-		String validationMessage = validations(entity);
+	public ResponseEntity<?> booking(@Valid @RequestBody Booking entity) {
+		String validationMessage = servicesValidation.validations(entity);
 		if (!validationMessage.equals("")) {
 			return new ResponseEntity<String>(validationMessage, HttpStatus.OK);
 		}
 
-		BookingModel booking = service.book(entity);
+		BookingDTO booking = service.book(entity);
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		return new ResponseEntity<BookingModel>(booking, HttpStatus.CREATED);
+		return new ResponseEntity<BookingDTO>(booking, HttpStatus.CREATED);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
 	public ResponseEntity<?> findAll() {
-		List<BookingModel> booking = service.findAll();
+		List<BookingDTO> booking = service.findAll();
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		return new ResponseEntity<List<BookingModel>>(booking, HttpStatus.OK);
+		return new ResponseEntity<List<BookingDTO>>(booking, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "v1/booking/bookingById/{id}")
+	public ResponseEntity<?> bookingById(@Valid @PathVariable("id") Long id) {
+		BookingDTO booking = service.getBookingDTOById(id);
+		if (booking == null) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+		}
+		return new ResponseEntity<BookingDTO>(booking, HttpStatus.OK);
 	}
 
 	@DeleteMapping(path = "v1/booking/bookings/{id}")
 	public ResponseEntity<?> cancel(@Valid @PathVariable("id") Long id) {
-		BookingEntity booking = service.getBookingById(id);
+		Booking booking = service.getBookingById(id);
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
@@ -67,83 +76,12 @@ public class BookingController {
 	}
 
 	@PutMapping(path = "v1/booking/bookings")
-	public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingEntity entity) {
-		BookingModel booking = service.updateBooking(entity);
+	public ResponseEntity<?> updateBooking(@Valid @RequestBody Booking entity) {
+		BookingDTO booking = service.updateBooking(entity);
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		return new ResponseEntity<BookingModel>(booking, HttpStatus.OK);
-	}
-
-	/**
-	 * Applies all validations
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	public String validations(BookingEntity entity) {
-		Long roomId = entity.getRoom().getId();
-
-		if (!isValidRoom(entity)) {
-			return "Room " + roomId + " is not valid!";
-		}
-		
-		
-		if(!isValidDateFormat(entity)) {
-			return "Please, set the date as dd/MM/yyyy";
-		}
-
-		if (!isValidPeriod(entity)) {
-			return "Check-in cannot be later than check-out";
-		}
-
-		String message = isRoomAvailable(entity);
-		if (!message.equals("OK")) {
-			return message;
-		}
-
-		return "";
-	}
-
-	/**
-	 * Validates whether the room exists
-	 * 
-	 * @param entity - BookEntity
-	 * @return true or false
-	 */
-	public Boolean isValidRoom(BookingEntity entity) {
-		return servicesValidation.isValidRoom(entity.getRoom().getId());
-	}
-
-	/**
-	 * Validates whether the room is available for that period of time
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	public String isRoomAvailable(@Valid @RequestBody BookingEntity entity) {
-		return servicesValidation.isRoomAvailable(entity.getRoom().getId(), entity.getCheckin());
-	}
-
-	/**
-	 * Validates whether the time period is valid (check-in date is no higher than
-	 * check-out)
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	public Boolean isValidPeriod(BookingEntity entity) {
-		System.out.println(entity.toString());
-		return servicesValidation.isValidPeriod(entity);
-	}
-	
-	/**
-	 *  * Validates whether the date is in the format ( dd/MM/yyyy )
-	 * @param entity
-	 * @return true if both dates are in the format ( dd/MM/yyyy )
-	 */
-	public Boolean isValidDateFormat(BookingEntity entity) {
-		return servicesValidation.isValidDateFormat(entity.getCheckin(), entity.getCheckout());
+		return new ResponseEntity<BookingDTO>(booking, HttpStatus.OK);
 	}
 
 }

@@ -3,8 +3,8 @@ package com.challenge.roomBooking.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.challenge.roomBooking.entity.BookingEntity;
-import com.challenge.roomBooking.entity.RoomEntity;
+import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.repository.BookingRepository;
 import com.challenge.roomBooking.repository.RoomRepository;
 import com.challenge.roomBooking.utils.DateUtils;
@@ -25,7 +25,7 @@ public class ServicesValidation {
 	 * @return true or false
 	 */
 	public Boolean isValidRoom(Long id) {
-		RoomEntity entity = roomRepository.findById(id).orElse(null);
+		Room entity = roomRepository.findById(id).orElse(null);
 		if (entity == null) {
 			return false;
 		}
@@ -36,10 +36,11 @@ public class ServicesValidation {
 	 * Validates whether the room is available in the desire booked day
 	 * 
 	 * @param id - Room id
-	 * @return 'OK' if the room is available or a message about the next available day
+	 * @return 'OK' if the room is available or a message about the next available
+	 *         day
 	 */
 	public String isRoomAvailable(Long id, String checkin) {
-		BookingEntity entity = bookingRepository.findByRoomIdAndCheckin(id, checkin);
+		Booking entity = bookingRepository.findByRoomIdAndCheckin(id, checkin);
 		if (entity == null) {
 			return "OK";
 		}
@@ -65,8 +66,37 @@ public class ServicesValidation {
 	 * @param checkout
 	 * @return true if the check-in is before the check-out or at the same day
 	 */
-	public Boolean isValidPeriod(BookingEntity entity) {
+	public Boolean isValidPeriod(Booking entity) {
 		return DateUtils.isValidPeriod(entity.getCheckin(), entity.getCheckout());
+	}
+
+	/**
+	 * Applies all validations
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public String validations(Booking entity) {
+		Long roomId = entity.getRoom().getId();
+
+		if (!isValidRoom(entity.getRoom().getId())) {
+			return "Room " + roomId + " is not valid!";
+		}
+
+		if (!isValidDateFormat(entity.getCheckin(), entity.getCheckout())) {
+			return "Please, set the date as dd/MM/yyyy";
+		}
+
+		if (!isValidPeriod(entity)) {
+			return "Check-in cannot be later than check-out";
+		}
+
+		String message = isRoomAvailable(entity.getRoom().getId(), entity.getCheckin());
+		if (!message.equals("OK")) {
+			return message;
+		}
+
+		return "";
 	}
 
 }

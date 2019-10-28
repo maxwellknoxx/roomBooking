@@ -13,10 +13,10 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class RoomModel {
+public class RoomDTO {
 	
 	private Long id;
 	private RoomType type;
-	private List<BookingModel> books;
+	private List<BookingDTO> books;
 
 }

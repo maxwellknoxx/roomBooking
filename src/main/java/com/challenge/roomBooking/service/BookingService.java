@@ -2,15 +2,15 @@ package com.challenge.roomBooking.service;
 
 import java.util.List;
 
-import com.challenge.roomBooking.entity.BookingEntity;
-import com.challenge.roomBooking.model.BookingModel;
+import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.model.BookingDTO;
 
 public interface BookingService {
 
-	List<BookingModel> findAll();
+	List<BookingDTO> findAll();
 	
-	BookingModel book(BookingEntity entity);
+	BookingDTO book(Booking entity);
 	
-	Boolean cancel(BookingEntity entity);
+	Boolean cancel(Booking entity);
 
 }
