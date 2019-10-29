@@ -36,19 +36,19 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public Boolean cancel(Booking entity) {
+	public Boolean cancel(Long id) {
 		try {
-			repository.delete(entity);
+			repository.deleteById(id);
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
-	
+
 	public Booking getBookingById(Long id) {
 		return repository.findById(id).orElse(null);
 	}
-	
+
 	public BookingDTO getBookingDTOById(Long id) {
 		Booking bookingEntity = repository.findById(id).orElse(null);
 		if (bookingEntity == null) {
@@ -56,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
 		}
 		return BookMapper.getModel(bookingEntity);
 	}
-	
+
 	public BookingDTO updateBooking(Booking entity) {
 		Booking bookingEntity = repository.save(entity);
 		if (bookingEntity == null) {

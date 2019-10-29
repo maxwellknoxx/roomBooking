@@ -53,7 +53,7 @@ public class BookingController {
 		}
 		return new ResponseEntity<List<BookingDTO>>(booking, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(path = "v1/booking/bookingById/{id}")
 	public ResponseEntity<?> bookingById(@Valid @PathVariable("id") Long id) {
 		BookingDTO booking = service.getBookingDTOById(id);
@@ -69,7 +69,7 @@ public class BookingController {
 		if (booking == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		if (service.cancel(booking)) {
+		if (service.cancel(id)) {
 			return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 		}
 		return new ResponseEntity<Boolean>(false, HttpStatus.OK);

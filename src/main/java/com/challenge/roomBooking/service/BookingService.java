@@ -11,6 +11,6 @@ public interface BookingService {
 	
 	BookingDTO book(Booking entity);
 	
-	Boolean cancel(Booking entity);
+	Boolean cancel(Long id);
 
 }

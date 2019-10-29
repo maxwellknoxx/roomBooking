@@ -2,11 +2,12 @@ package com.challenge.roomBooking;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.challenge.roomBooking.controller.RoomController;
@@ -28,7 +30,7 @@ import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.enums.RoomType;
 import com.challenge.roomBooking.model.RoomDTO;
 import com.challenge.roomBooking.service.impl.RoomServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.challenge.roomBooking.utils.JSONUtils;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(RoomController.class)
@@ -53,13 +55,55 @@ class RoomUnitTests {
 		when(service.save(any(Room.class))).thenReturn(getRoom());
 
 		mockMvc.perform(post("/api/v1/room/rooms").contentType(MediaType.APPLICATION_JSON)
-				.content(objectoToJson(getRoomEntity()))).andExpect(status().isCreated())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
+				.content(JSONUtils.objectToJSON(getRoomEntity()))).andExpect(status().isCreated())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print());
+	}
 
+	@Test
+	public void shouldUpdateRoom() throws Exception {
+
+		when(service.save(any(Room.class))).thenReturn(getRoom());
+
+		mockMvc.perform(put("/api/v1/room/rooms").contentType(MediaType.APPLICATION_JSON)
+				.content(JSONUtils.objectToJSON(getRoomEntity()))).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print());
+	}
+
+	@Test
+	public void shouldFindAll() throws Exception {
+		when(service.findAll()).thenReturn(getRooms());
+
+		mockMvc.perform(get("/api/v1/room/rooms").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print());
+	}
+
+	@Test
+	public void shouldGetRoomByType() throws Exception {
+		when(service.getRoomByType(RoomType.SINGLE)).thenReturn(getRoomsByType());
+
+		mockMvc.perform(post("/api/v1/room/roomsByType").contentType(MediaType.APPLICATION_JSON)
+				.content(JSONUtils.objectToJSON(getRoomEntity()))).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print());
 	}
 
 	public RoomDTO getRoom() {
 		return RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build();
+	}
+
+	public List<RoomDTO> getRoomsByType() {
+		List<RoomDTO> list = new ArrayList<>();
+		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomDTO.builder().id(4L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomDTO.builder().id(5L).type(RoomType.SINGLE).books(null).build());
+		return list;
+	}
+
+	public List<RoomDTO> getRooms() {
+		List<RoomDTO> list = new ArrayList<>();
+		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomDTO.builder().id(2L).type(RoomType.DOUBLE).books(null).build());
+		list.add(RoomDTO.builder().id(3L).type(RoomType.SUITE).books(null).build());
+		return list;
 	}
 
 	public Room getRoomEntity() {
@@ -79,22 +123,6 @@ class RoomUnitTests {
 		entity.setBooks(listBooking);
 
 		return entity;
-	}
-
-	public String objectoToJson(Room entity) {
-		String jsonStr = "";
-		try {
-			ObjectMapper Obj = new ObjectMapper();
-			jsonStr = Obj.writeValueAsString(entity);
-
-			System.out.println(jsonStr);
-		}
-
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		return jsonStr;
-
 	}
 
 }
