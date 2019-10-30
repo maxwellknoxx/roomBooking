@@ -32,17 +32,22 @@ public class BookingController {
 	private ServicesValidation servicesValidation;
 
 	@PostMapping(path = "v1/booking/booking")
-	public ResponseEntity<?> booking(@Valid @RequestBody Booking entity) {
-		String validationMessage = servicesValidation.validations(entity);
+	public ResponseEntity<?> booking(@Valid @RequestBody BookingDTO dto) {
+
+		List<String> bookedDays = servicesValidation.setDays(dto);
+		String validationMessage = servicesValidation.validations(dto, bookedDays);
 		if (!validationMessage.equals("")) {
 			return new ResponseEntity<String>(validationMessage, HttpStatus.OK);
 		}
 
-		BookingDTO booking = service.book(entity);
-		if (booking == null) {
+		Booking booking = servicesValidation.prepareBooking(dto, bookedDays);
+
+		if (service.book(booking) == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
-		return new ResponseEntity<BookingDTO>(booking, HttpStatus.CREATED);
+		return new ResponseEntity<String>(
+				"Room " + dto.getRoomId() + " reserved from: " + dto.getCheckin() + " to " + dto.getCheckout(),
+				HttpStatus.CREATED);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
@@ -67,21 +72,18 @@ public class BookingController {
 	public ResponseEntity<?> cancel(@Valid @PathVariable("id") Long id) {
 		Booking booking = service.getBookingById(id);
 		if (booking == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+			return new ResponseEntity<String>("Please, check booking number", HttpStatus.OK);
 		}
 		if (service.cancel(id)) {
-			return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+			return new ResponseEntity<String>("Booking " + id + " Cancelled", HttpStatus.OK);
 		}
-		return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+		return new ResponseEntity<String>("Please, check booking number", HttpStatus.OK);
 	}
 
 	@PutMapping(path = "v1/booking/bookings")
-	public ResponseEntity<?> updateBooking(@Valid @RequestBody Booking entity) {
-		BookingDTO booking = service.updateBooking(entity);
-		if (booking == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
-		}
-		return new ResponseEntity<BookingDTO>(booking, HttpStatus.OK);
+	public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingDTO dto) {
+		// pensar nisso com carinho
+		return new ResponseEntity<String>("pensar nisso com carinho", HttpStatus.OK);
 	}
 
 }

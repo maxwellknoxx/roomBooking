@@ -17,6 +17,6 @@ public class RoomDTO {
 	
 	private Long id;
 	private RoomType type;
-	private List<BookingDTO> books;
+	private List<BookingDTO> bookings;
 
 }

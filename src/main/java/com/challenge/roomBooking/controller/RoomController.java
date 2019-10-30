@@ -64,5 +64,5 @@ public class RoomController {
 		}
 		return new ResponseEntity<List<RoomDTO>>(rooms, HttpStatus.OK);
 	}
-
+	
 }

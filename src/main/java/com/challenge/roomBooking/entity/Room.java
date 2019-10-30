@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,8 +38,8 @@ public class Room {
 	@Column(name = "room_type")
 	private RoomType roomType;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
+	@OneToMany(mappedBy = "room")
 	@JsonIgnore
-	private List<Booking> books = new ArrayList<>();
+	private List<Booking> bookings = new ArrayList<>();
 	
 }

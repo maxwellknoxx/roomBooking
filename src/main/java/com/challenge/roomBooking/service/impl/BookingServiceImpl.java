@@ -23,17 +23,14 @@ public class BookingServiceImpl implements BookingService {
 		if (entities.isEmpty()) {
 			return null;
 		}
-		return BookMapper.getListModel(entities);
+		return BookMapper.getListDTO(entities);
 	}
 
 	@Override
-	public BookingDTO book(Booking entity) {
-		Booking bookingEntity = repository.save(entity);
-		if (bookingEntity == null) {
-			return null;
-		}
-		return BookMapper.getModel(bookingEntity);
+	public BookingDTO book(Booking booking) {
+		return BookMapper.getDTO(repository.save(booking));
 	}
+
 
 	@Override
 	public Boolean cancel(Long id) {
@@ -54,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
 		if (bookingEntity == null) {
 			return null;
 		}
-		return BookMapper.getModel(bookingEntity);
+		return BookMapper.getDTO(bookingEntity);
 	}
 
 	public BookingDTO updateBooking(Booking entity) {
@@ -62,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
 		if (bookingEntity == null) {
 			return null;
 		}
-		return BookMapper.getModel(bookingEntity);
+		return BookMapper.getDTO(bookingEntity);
 	}
 
 }

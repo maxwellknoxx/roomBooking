@@ -6,13 +6,16 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.challenge.roomBooking.model.BookingDTO;
+
 public class DateUtils {
-	
+
 	/**
 	 * Validates whether the date is in the format ( dd/MM/yyyy )
 	 * 
@@ -21,14 +24,14 @@ public class DateUtils {
 	 */
 	public static Boolean isValidDateFormat(String stringDate) {
 		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        sdf.setLenient(false);
-        try {
-            sdf.parse(stringDate);
-        } catch (ParseException e) {
-            return false;
-        }
+		sdf.setLenient(false);
+		try {
+			sdf.parse(stringDate);
+		} catch (ParseException e) {
+			return false;
+		}
 		return true;
-    }
+	}
 
 	/**
 	 * Converts a String to Date
@@ -57,12 +60,31 @@ public class DateUtils {
 	public static Boolean isValidPeriod(String checkin, String checkout) {
 		Date dateCheckIn = convertStringToDate(checkin);
 		Date dateCheckOut = convertStringToDate(checkout);
-		
+
 		int output = dateCheckIn.compareTo(dateCheckOut);
 		if (output == -1 || output == 0) {
 			return true;
 		}
-		
+
+		return false;
+	}
+
+	/**
+	 * Checks whether the check-in is before today
+	 * 
+	 * @param checkin
+	 * @param checkout
+	 * @return true if the check-in is before today
+	 */
+	public static Boolean isCheckinBeforeToday(String checkin) {
+		Date dateCheckIn = convertStringToDate(checkin);
+		Date dateCheckOut = convertStringToDate(getToday());
+
+		int output = dateCheckIn.compareTo(dateCheckOut);
+		if (output == -1) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -89,6 +111,31 @@ public class DateUtils {
 	 */
 	public static LocalDate convertToLocalDate(Date dateToConvert) {
 		return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
+	public static String getToday() {
+		Date date = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		return formatter.format(date);
+	}
+
+	/**
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public static List<String> setDays(BookingDTO dto) {
+		Date checkin = convertStringToDate(dto.getCheckin());
+		Date checkout = convertStringToDate(dto.getCheckout());
+		List<LocalDate> days = DateUtils.getDatesBetween(checkin, checkout);
+
+		List<String> booked_days = new ArrayList<>();
+		String dayString = "";
+		for (LocalDate day : days) {
+			dayString = day.toString();
+			booked_days.add(dayString);
+		}
+		return booked_days;
 	}
 
 }

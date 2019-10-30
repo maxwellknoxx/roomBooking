@@ -5,13 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.entity.BookingCalendar;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Booking, Long> {
-
-	List<Booking> findAll();
+public interface BookingCalendarRepository extends JpaRepository<BookingCalendar, Long> {
 	
-	List<Booking> findByRoomId(Long id);
+	List<BookingCalendar> findByBookingId(Long id);
 
 }

@@ -3,8 +3,6 @@ package com.challenge.roomBooking.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.challenge.roomBooking.enums.RoomType;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,13 +12,10 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-public class BookingDTO {
-
+public class BookingCalendarDTO {
+	
 	private Long id;
-	private Long roomId;
-	private RoomType roomType;
-	private String checkin;
-	private String checkout;
+	private Long bookingId;
 	List<LocalDate> bookedDays;
 
 }

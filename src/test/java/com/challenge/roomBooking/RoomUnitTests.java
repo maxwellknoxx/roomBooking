@@ -87,22 +87,22 @@ class RoomUnitTests {
 	}
 
 	public RoomDTO getRoom() {
-		return RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build();
+		return RoomDTO.builder().id(1L).type(RoomType.SINGLE).bookings(null).build();
 	}
 
 	public List<RoomDTO> getRoomsByType() {
 		List<RoomDTO> list = new ArrayList<>();
-		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build());
-		list.add(RoomDTO.builder().id(4L).type(RoomType.SINGLE).books(null).build());
-		list.add(RoomDTO.builder().id(5L).type(RoomType.SINGLE).books(null).build());
+		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).bookings(null).build());
+		list.add(RoomDTO.builder().id(4L).type(RoomType.SINGLE).bookings(null).build());
+		list.add(RoomDTO.builder().id(5L).type(RoomType.SINGLE).bookings(null).build());
 		return list;
 	}
 
 	public List<RoomDTO> getRooms() {
 		List<RoomDTO> list = new ArrayList<>();
-		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).books(null).build());
-		list.add(RoomDTO.builder().id(2L).type(RoomType.DOUBLE).books(null).build());
-		list.add(RoomDTO.builder().id(3L).type(RoomType.SUITE).books(null).build());
+		list.add(RoomDTO.builder().id(1L).type(RoomType.SINGLE).bookings(null).build());
+		list.add(RoomDTO.builder().id(2L).type(RoomType.DOUBLE).bookings(null).build());
+		list.add(RoomDTO.builder().id(3L).type(RoomType.SUITE).bookings(null).build());
 		return list;
 	}
 
@@ -114,13 +114,11 @@ class RoomUnitTests {
 		Booking booking = new Booking();
 		booking.setId(1L);
 		booking.setRoom(entity);
-		booking.setCheckin("26/10/2019");
-		booking.setCheckout("28/10/2019");
 
 		List<Booking> listBooking = new ArrayList<>();
 		listBooking.add(booking);
 
-		entity.setBooks(listBooking);
+		entity.setBookings(listBooking);
 
 		return entity;
 	}

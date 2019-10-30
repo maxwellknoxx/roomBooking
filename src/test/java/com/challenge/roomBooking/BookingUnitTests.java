@@ -59,7 +59,7 @@ class BookingUnitTests {
 	public void shouldBook() throws Exception {
 
 		when(service.book(any(Booking.class))).thenReturn(getBookingDTO());
-		when(servicesValidation.validations(any(Booking.class))).thenReturn("");
+		when(servicesValidation.validations(any(BookingDTO.class), bookedDays())).thenReturn("");
 
 		mockMvc.perform(post("/api/v1/booking/booking").contentType(MediaType.APPLICATION_JSON)
 				.content(JSONUtils.objectToJSON(getBooking()))).andExpect(status().isCreated())
@@ -113,14 +113,12 @@ class BookingUnitTests {
 
 	public BookingDTO getBookingDTO() {
 		return BookingDTO.builder().id(1L).roomId(1L).roomType(RoomType.SINGLE).checkin("05/11/2019")
-				.checkout("10/11/2019").booked_days(null).build();
+				.checkout("10/11/2019").build();
 	}
 
 	public Booking getBooking() {
 		Booking booking = new Booking();
 		booking.setId(1L);
-		booking.setCheckin("05/11/2019");
-		booking.setCheckout("10/11/2019");
 
 		Room roomEntity = new Room();
 		roomEntity.setId(1L);
@@ -140,6 +138,14 @@ class BookingUnitTests {
 		list.add(BookingDTO.builder().id(2L).roomId(1L).roomType(RoomType.SUITE).checkin("28/10/2019")
 				.checkout("30/10/2019").build());
 		return list;
+	}
+	
+	public List<String> bookedDays(){
+		List<String> days = new ArrayList<>();
+		days.add("25/11/2019");
+		days.add("26/11/2019");
+		days.add("27/11/2019");
+		return days;
 	}
 
 }
