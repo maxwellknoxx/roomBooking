@@ -31,6 +31,10 @@ public class BookingServiceImpl implements BookingService {
 		return BookMapper.getDTO(repository.save(booking));
 	}
 
+	public BookingDTO book(BookingDTO booking) {
+		Booking entity = BookMapper.parseDTOtoEntity(booking);
+		return BookMapper.getDTO(repository.save(entity));
+	}
 
 	@Override
 	public Boolean cancel(Long id) {

@@ -20,4 +20,9 @@ public class BookingCalendarServiceImpl implements BookingCalendarService {
 		return repository.findByBookingId(id);
 	}
 
+	@Override
+	public Boolean deleteByBookingId(Long id) {
+		return repository.deleteByBookingId(id);
+	}
+
 }

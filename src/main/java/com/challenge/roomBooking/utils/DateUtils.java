@@ -51,13 +51,13 @@ public class DateUtils {
 	}
 
 	/**
-	 * Compares whether the check-in and check-out date is valid
+	 * Checks whether checkin is befor checkout
 	 * 
 	 * @param checkin
 	 * @param checkout
 	 * @return true if the check-in is before the check-out or at the same day
 	 */
-	public static Boolean isValidPeriod(String checkin, String checkout) {
+	public static Boolean isValidCheckin(String checkin, String checkout) {
 		Date dateCheckIn = convertStringToDate(checkin);
 		Date dateCheckOut = convertStringToDate(checkout);
 
@@ -67,6 +67,30 @@ public class DateUtils {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks whether checkout is after checkin
+	 * 
+	 * @param checkin
+	 * @param checkout
+	 * @return 
+	 */
+	public static Boolean isValidCheckout(String checkin, String checkout) {
+		Date dateCheckIn = convertStringToDate(checkin);
+		Date dateCheckOut = convertStringToDate(checkout);
+
+		int output = dateCheckOut.compareTo(dateCheckIn);
+		if (output == 1 || output == 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static Boolean isValidPeriod(String checkin, String checkout) {
+		return isValidCheckin(checkin, checkout)
+				|| isValidCheckout(checkin, checkout);
 	}
 
 	/**
@@ -87,7 +111,7 @@ public class DateUtils {
 
 		return false;
 	}
-
+	
 	/**
 	 * Returns all days between two dates
 	 * 

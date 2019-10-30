@@ -11,5 +11,7 @@ import com.challenge.roomBooking.entity.BookingCalendar;
 public interface BookingCalendarRepository extends JpaRepository<BookingCalendar, Long> {
 	
 	List<BookingCalendar> findByBookingId(Long id);
+	
+	Boolean deleteByBookingId(Long id);
 
 }

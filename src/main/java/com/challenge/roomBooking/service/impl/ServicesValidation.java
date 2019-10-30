@@ -6,13 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.challenge.roomBooking.entity.Booking;
 import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.model.BookingDTO;
 import com.challenge.roomBooking.repository.BookingCalendarRepository;
 import com.challenge.roomBooking.repository.RoomRepository;
-import com.challenge.roomBooking.utils.BookMapper;
 import com.challenge.roomBooking.utils.DateUtils;
 
 @Service
@@ -106,31 +104,17 @@ public class ServicesValidation {
 	}
 
 	/**
-	 * Applies all validations
+	 * Applies rooms validations
 	 * 
 	 * @param entity
 	 * @return
 	 */
-	public String validations(BookingDTO dto, List<String> bookedDays) {
-		Long roomId = dto.getRoomId();
-
+	public String roomValidations(Long roomId, List<String> bookedDays) {
 		if (!isValidRoom(roomId)) {
 			return "Room " + roomId + " is not valid!";
 		}
 
-		if (!isValidDateFormat(dto.getCheckin(), dto.getCheckout())) {
-			return "Please, set the date as dd/MM/yyyy";
-		}
-
-		if (isCheckinBeforeToday(dto.getCheckin())) {
-			return "Check-in cannot be before today";
-		}
-
-		if (!isValidPeriod(dto)) { // verificar se checkout eh antes de check in
-			return "Check-in cannot be later than check-out";
-		}
-
-		String message = isRoomAvailable(dto.getRoomId(), bookedDays);
+		String message = isRoomAvailable(roomId, bookedDays);
 		if (!message.equals("OK")) {
 			return message;
 		}
@@ -139,16 +123,41 @@ public class ServicesValidation {
 	}
 
 	/**
+	 * Applies dates validations
 	 * 
-	 * After validations, prepare the booking with the desired booking date to be
-	 * inserted on a database
+	 * @param dto
+	 * @return
+	 */
+	public String dateValidation(BookingDTO dto) {
+		if (!isValidDateFormat(dto.getCheckin(), dto.getCheckout())) {
+			return "Please, set the date as dd/MM/yyyy";
+		}
+
+		if (isCheckinBeforeToday(dto.getCheckin())) {
+			return "Check-in cannot be before today";
+		}
+
+		if (!isValidPeriod(dto)) {
+			return "Please, verifiy check-in and/or check-out dates";
+		}
+		return "";
+	}
+
+	/**
+	 * 
+	 * 
 	 * 
 	 * @param entity
 	 * @param bookedDays
 	 * @return
 	 */
-	public Booking prepareBooking(BookingDTO dto, List<String> bookedDays) {
-		Booking booking = BookMapper.parseDTOtoEntity(dto);
+	public BookingDTO prepareBooking(BookingDTO dto) {
+		System.out.println(dto.toString());
+		List<String> bookedDays = setDays(dto);
+		
+		dto.setRoomMessage(roomValidations(dto.getRoomId(), bookedDays));
+		dto.setDateMessage(dateValidation(dto));
+
 		BookingCalendar bookingCalendar;
 		List<BookingCalendar> bookingsCalendar = new ArrayList<>();
 
@@ -159,10 +168,8 @@ public class ServicesValidation {
 			bookingCalendar.setDay(bookedDay);
 			bookingsCalendar.add(bookingCalendar);
 		}
-
-		booking.setBookingsCalendar(bookingsCalendar);
-
-		return booking;
+		dto.setBookingsCalendar(bookingsCalendar);
+		return dto;
 	}
 
 }

@@ -34,13 +34,12 @@ public class BookingController {
 	@PostMapping(path = "v1/booking/booking")
 	public ResponseEntity<?> booking(@Valid @RequestBody BookingDTO dto) {
 
-		List<String> bookedDays = servicesValidation.setDays(dto);
-		String validationMessage = servicesValidation.validations(dto, bookedDays);
-		if (!validationMessage.equals("")) {
-			return new ResponseEntity<String>(validationMessage, HttpStatus.OK);
+		BookingDTO booking = servicesValidation.prepareBooking(dto);
+		if (!booking.getRoomMessage().equals("")) {
+			return new ResponseEntity<String>(booking.getRoomMessage(), HttpStatus.OK);
+		} else if (!booking.getDateMessage().equals("")) {
+			return new ResponseEntity<String>(booking.getDateMessage(), HttpStatus.OK);
 		}
-
-		Booking booking = servicesValidation.prepareBooking(dto, bookedDays);
 
 		if (service.book(booking) == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
@@ -48,6 +47,12 @@ public class BookingController {
 		return new ResponseEntity<String>(
 				"Room " + dto.getRoomId() + " reserved from: " + dto.getCheckin() + " to " + dto.getCheckout(),
 				HttpStatus.CREATED);
+	}
+
+	@PutMapping(path = "v1/booking/bookings")
+	public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingDTO dto) {
+
+		return new ResponseEntity<String>("pensar nisso com carinho", HttpStatus.OK);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
@@ -72,18 +77,43 @@ public class BookingController {
 	public ResponseEntity<?> cancel(@Valid @PathVariable("id") Long id) {
 		Booking booking = service.getBookingById(id);
 		if (booking == null) {
-			return new ResponseEntity<String>("Please, check booking number", HttpStatus.OK);
+			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
 		if (service.cancel(id)) {
-			return new ResponseEntity<String>("Booking " + id + " Cancelled", HttpStatus.OK);
+			return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Please, check booking number", HttpStatus.OK);
+		return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 	}
 
-	@PutMapping(path = "v1/booking/bookings")
-	public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingDTO dto) {
-		// pensar nisso com carinho
+	@PostMapping(path = "v1/booking/dates")
+	public ResponseEntity<?> dates(@Valid @RequestBody BookingDTO dto) {
+
+		if (servicesValidation.isValidPeriod(dto)) {
+			System.out.println("true");
+		} else {
+			System.out.println("false");
+		}
+
 		return new ResponseEntity<String>("pensar nisso com carinho", HttpStatus.OK);
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @param bookedDays
+	 * @return
+	 */
+	public String roomValidaton(Long id, List<String> bookedDays) {
+		return servicesValidation.roomValidations(id, bookedDays);
+	}
+
+	/**
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public String dateValidation(BookingDTO dto) {
+		return servicesValidation.dateValidation(dto);
 	}
 
 }

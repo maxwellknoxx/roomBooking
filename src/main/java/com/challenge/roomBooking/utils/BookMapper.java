@@ -1,5 +1,6 @@
 package com.challenge.roomBooking.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.model.BookingDTO;
 
@@ -37,17 +39,20 @@ public class BookMapper {
 	}
 
 	public static Booking parseDTOtoEntity(BookingDTO dto) {
-		Booking copy = new Booking();
+		Booking booking = new Booking();
 		Room room = new Room();
-
-		copy.setId(dto.getId());
 
 		room.setId(dto.getRoomId());
 		room.setRoomType(dto.getRoomType());
 
-		copy.setRoom(room);
+		booking.setRoom(room);
+		
+		List<BookingCalendar> listBC = new ArrayList<>();
+		listBC = dto.getBookingsCalendar();
+		
+		booking.setBookingsCalendar(listBC);
 
-		return copy;
+		return booking;
 	}
 
 }
