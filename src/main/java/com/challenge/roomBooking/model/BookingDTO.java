@@ -3,7 +3,6 @@ package com.challenge.roomBooking.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,14 +27,14 @@ public class BookingDTO {
 	private String checkin;
 	private String checkout;
 	List<LocalDate> bookedDays;
-	
+
 	@JsonIgnore
 	private String roomMessage;
-	
+
 	@JsonIgnore
 	private String dateMessage;
-	
+
 	@JsonIgnore
-	private List<BookingCalendar> bookingsCalendar;
+	private List<BookingCalendarDTO> bookingsCalendar;
 
 }

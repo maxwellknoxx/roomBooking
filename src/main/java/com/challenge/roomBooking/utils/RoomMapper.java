@@ -12,16 +12,16 @@ import com.challenge.roomBooking.model.RoomDTO;
 @Component
 public class RoomMapper {
 
-	public static RoomDTO getModel(Room entity) {
+	public static RoomDTO getDTO(Room entity) {
 		return RoomDTO.builder().id(entity.getId()).type(entity.getRoomType())
 				.bookings(BookMapper.getListDTO(entity.getBookings())).build();
 	}
 
-	public static List<RoomDTO> getListModel(List<Room> entities) {
+	public static List<RoomDTO> getListDTO(List<Room> entities) {
 		return entities
 				.stream().filter(Objects::nonNull).map(entity -> RoomDTO.builder().id(entity.getId())
 						.type(entity.getRoomType()).bookings(BookMapper.getListDTO(entity.getBookings())).build())
 				.collect(Collectors.toList());
 	}
-
+	
 }

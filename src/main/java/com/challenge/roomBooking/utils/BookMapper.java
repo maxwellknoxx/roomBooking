@@ -1,6 +1,5 @@
 package com.challenge.roomBooking.utils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,16 +39,15 @@ public class BookMapper {
 
 	public static Booking parseDTOtoEntity(BookingDTO dto) {
 		Booking booking = new Booking();
-		Room room = new Room();
 
+		Room room = new Room();
 		room.setId(dto.getRoomId());
 		room.setRoomType(dto.getRoomType());
 
 		booking.setRoom(room);
-		
-		List<BookingCalendar> listBC = new ArrayList<>();
-		listBC = dto.getBookingsCalendar();
-		
+
+		List<BookingCalendar> listBC = BookingCalendarMapper.parseListDTOtoListEntity(dto.getBookingsCalendar());
+
 		booking.setBookingsCalendar(listBC);
 
 		return booking;

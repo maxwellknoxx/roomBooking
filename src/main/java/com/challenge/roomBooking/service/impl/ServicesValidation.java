@@ -6,10 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.challenge.roomBooking.entity.Booking;
 import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.entity.Room;
+import com.challenge.roomBooking.exception.DateException;
+import com.challenge.roomBooking.exception.RoomException;
+import com.challenge.roomBooking.model.BookingCalendarDTO;
 import com.challenge.roomBooking.model.BookingDTO;
 import com.challenge.roomBooking.repository.BookingCalendarRepository;
+import com.challenge.roomBooking.repository.BookingRepository;
 import com.challenge.roomBooking.repository.RoomRepository;
 import com.challenge.roomBooking.utils.DateUtils;
 
@@ -20,10 +25,19 @@ public class ServicesValidation {
 	private RoomRepository roomRepository;
 
 	@Autowired
+	private BookingRepository bookingRepository;
+
+	@Autowired
 	private BookingCalendarRepository bookingCalendarRepository;
 
-	public List<String> setDays(BookingDTO dto) {
-		return DateUtils.setDays(dto);
+	/**
+	 * Creates a list of days between two dates
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public List<String> createListOfDays(BookingDTO dto) {
+		return DateUtils.createListOfDays(dto);
 	}
 
 	/**
@@ -47,18 +61,25 @@ public class ServicesValidation {
 	 * @return 'OK' if the room is available or a message about the next available
 	 *         day
 	 */
-	public String isRoomAvailable(Long id, List<String> bookedDays) {
-		List<BookingCalendar> listBooking = bookingCalendarRepository.findByBookingId(id);
+	public String isRoomAvailable(Long roomId, List<String> bookedDays) {
+		List<Booking> listBooking = getBookingsByRoomId(roomId);
+
+		String unavailables = "";
+		String day = "";
 
 		if (listBooking.isEmpty())
 			return "OK";
 
-		String unavailables = "";
-		String day = "";
-		for (int i = 0; i < listBooking.size(); i++) {
-			day = listBooking.get(i).getDay();
-			if (bookedDays.contains(day)) {
-				unavailables += day + ", ";
+		List<BookingCalendar> listBookingCalendar = new ArrayList<>();
+		for (Booking booking : listBooking) {
+			listBookingCalendar = new ArrayList<>();
+			listBookingCalendar = getBookingCalendarByBookingId(booking.getId());
+
+			for (int i = 0; i < listBookingCalendar.size(); i++) {
+				day = listBookingCalendar.get(i).getDay();
+				if (bookedDays.contains(day)) {
+					unavailables += day + ", ";
+				}
 			}
 		}
 
@@ -67,7 +88,27 @@ public class ServicesValidation {
 
 		unavailables = unavailables.substring(0, unavailables.length() - 2);
 
-		return "Room is not avaiable amoung the days: " + unavailables;
+		return "Room is not available amoung the days: " + unavailables;
+	}
+
+	/**
+	 * Returns a list of booking by room Id
+	 * 
+	 * @param roomId
+	 * @return
+	 */
+	public List<Booking> getBookingsByRoomId(Long roomId) {
+		return bookingRepository.findByRoomId(roomId);
+	}
+
+	/**
+	 * Returns a list of Booking Calendar by Booking Id
+	 * 
+	 * @param bookingId
+	 * @return
+	 */
+	public List<BookingCalendar> getBookingCalendarByBookingId(Long bookingId) {
+		return bookingCalendarRepository.findByBookingId(bookingId);
 	}
 
 	/**
@@ -93,7 +134,7 @@ public class ServicesValidation {
 	}
 
 	/**
-	 * Compares whether the check-in and check-out date is valid
+	 * Compares whether the check-in and check-out date are valid
 	 * 
 	 * @param checkin
 	 * @param checkout
@@ -109,7 +150,7 @@ public class ServicesValidation {
 	 * @param entity
 	 * @return
 	 */
-	public String roomValidations(Long roomId, List<String> bookedDays) {
+	public String roomValidations(Long roomId, List<String> bookedDays) throws RoomException, DateException {
 		if (!isValidRoom(roomId)) {
 			return "Room " + roomId + " is not valid!";
 		}
@@ -144,25 +185,34 @@ public class ServicesValidation {
 	}
 
 	/**
-	 * 
-	 * 
+	 * Prepares booking to be inserted on database it validates room and dates
 	 * 
 	 * @param entity
 	 * @param bookedDays
 	 * @return
 	 */
-	public BookingDTO prepareBooking(BookingDTO dto) {
-		System.out.println(dto.toString());
-		List<String> bookedDays = setDays(dto);
-		
-		dto.setRoomMessage(roomValidations(dto.getRoomId(), bookedDays));
+	public BookingDTO prepareBooking(BookingDTO dto) throws RoomException, DateException {
 		dto.setDateMessage(dateValidation(dto));
 
-		BookingCalendar bookingCalendar;
-		List<BookingCalendar> bookingsCalendar = new ArrayList<>();
+		String dateMessage = dto.getDateMessage();
+		if (!dateMessage.equals("")) {
+			throw new DateException(Booking.class, dateMessage);
+		}
+
+		List<String> bookedDays = createListOfDays(dto);
+
+		dto.setRoomMessage(roomValidations(dto.getRoomId(), bookedDays));
+
+		String roomMessage = dto.getRoomMessage();
+		if (!roomMessage.equals("")) {
+			throw new RoomException(Room.class, roomMessage);
+		}
+
+		BookingCalendarDTO bookingCalendar;
+		List<BookingCalendarDTO> bookingsCalendar = new ArrayList<>();
 
 		for (String bookedDay : bookedDays) {
-			bookingCalendar = new BookingCalendar();
+			bookingCalendar = new BookingCalendarDTO();
 			bookingCalendar.setCheckin(dto.getCheckin());
 			bookingCalendar.setCheckout(dto.getCheckout());
 			bookingCalendar.setDay(bookedDay);

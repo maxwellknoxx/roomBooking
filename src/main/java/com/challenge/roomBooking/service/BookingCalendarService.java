@@ -8,6 +8,6 @@ public interface BookingCalendarService {
 	
 	List<BookingCalendar> findByBookingId(Long id);
 	
-	Boolean deleteByBookingId(Long id);
+	Integer deleteByBookingId(Long id);
 
 }

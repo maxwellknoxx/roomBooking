@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.repository.BookingCalendarRepository;
 import com.challenge.roomBooking.service.BookingCalendarService;
 
 @Service
+@Transactional
 public class BookingCalendarServiceImpl implements BookingCalendarService {
 
 	@Autowired
@@ -21,7 +23,7 @@ public class BookingCalendarServiceImpl implements BookingCalendarService {
 	}
 
 	@Override
-	public Boolean deleteByBookingId(Long id) {
+	public Integer deleteByBookingId(Long id) {
 		return repository.deleteByBookingId(id);
 	}
 

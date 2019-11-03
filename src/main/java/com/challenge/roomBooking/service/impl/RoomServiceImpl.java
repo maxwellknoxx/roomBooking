@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.enums.RoomType;
+import com.challenge.roomBooking.exception.EntityNotFoundException;
+import com.challenge.roomBooking.exception.ResourceNotFoundException;
 import com.challenge.roomBooking.model.RoomDTO;
 import com.challenge.roomBooking.repository.RoomRepository;
 import com.challenge.roomBooking.service.RoomService;
@@ -22,9 +24,9 @@ public class RoomServiceImpl implements RoomService {
 	public List<RoomDTO> findAll() {
 		List<Room> entities = repository.findAll();
 		if (entities.isEmpty()) {
-			return null;
+			throw new ResourceNotFoundException(Room.class, "No room found");
 		}
-		return RoomMapper.getListModel(entities);
+		return RoomMapper.getListDTO(entities);
 	}
 
 	public RoomDTO save(Room entity) {
@@ -32,7 +34,7 @@ public class RoomServiceImpl implements RoomService {
 		if (entity == null) {
 			return null;
 		}
-		return RoomMapper.getModel(roomEntity);
+		return RoomMapper.getDTO(roomEntity);
 	}
 
 	public RoomDTO update(Room entity) {
@@ -40,15 +42,23 @@ public class RoomServiceImpl implements RoomService {
 		if (entity == null) {
 			return null;
 		}
-		return RoomMapper.getModel(roomEntity);
+		return RoomMapper.getDTO(roomEntity);
+	}
+
+	public RoomDTO getRoomById(Long id) {
+		Room roomEntity = repository.findById(id).orElse(null);
+		if (roomEntity == null) {
+			throw new EntityNotFoundException(Room.class, "id", id.toString());
+		}
+		return RoomMapper.getDTO(roomEntity);
 	}
 
 	public List<RoomDTO> getRoomByType(RoomType type) {
 		List<Room> entities = repository.findByRoomType(type);
 		if (entities.isEmpty()) {
-			return null;
+			throw new EntityNotFoundException(Room.class, "Type", type.toString());
 		}
-		return RoomMapper.getListModel(entities);
+		return RoomMapper.getListDTO(entities);
 	}
 
 }

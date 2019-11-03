@@ -1,10 +1,10 @@
 package com.challenge.roomBooking.utils;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.stereotype.Component;
+
 import com.challenge.roomBooking.model.BookingDTO;
 
+@Component
 public class DateUtils {
 
 	/**
@@ -23,11 +26,10 @@ public class DateUtils {
 	 * @return true if it is in the format dd/MM/yyyy
 	 */
 	public static Boolean isValidDateFormat(String stringDate) {
-		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		sdf.setLenient(false);
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		try {
-			sdf.parse(stringDate);
-		} catch (ParseException e) {
+			LocalDate.parse(stringDate, dateFormatter);
+		} catch (Exception e) {
 			return false;
 		}
 		return true;
@@ -51,7 +53,7 @@ public class DateUtils {
 	}
 
 	/**
-	 * Checks whether checkin is befor checkout
+	 * Checks whether check-in is before check-out
 	 * 
 	 * @param checkin
 	 * @param checkout
@@ -70,11 +72,11 @@ public class DateUtils {
 	}
 
 	/**
-	 * Checks whether checkout is after checkin
+	 * Checks whether check-out is after check-in
 	 * 
 	 * @param checkin
 	 * @param checkout
-	 * @return 
+	 * @return
 	 */
 	public static Boolean isValidCheckout(String checkin, String checkout) {
 		Date dateCheckIn = convertStringToDate(checkin);
@@ -88,9 +90,15 @@ public class DateUtils {
 		return false;
 	}
 
+	/**
+	 * Applies check-in and check-out validations
+	 * 
+	 * @param checkin
+	 * @param checkout
+	 * @return
+	 */
 	public static Boolean isValidPeriod(String checkin, String checkout) {
-		return isValidCheckin(checkin, checkout)
-				|| isValidCheckout(checkin, checkout);
+		return isValidCheckin(checkin, checkout) || isValidCheckout(checkin, checkout);
 	}
 
 	/**
@@ -111,9 +119,9 @@ public class DateUtils {
 
 		return false;
 	}
-	
+
 	/**
-	 * Returns all days between two dates
+	 * Returns days between two dates
 	 * 
 	 * @param checkin
 	 * @param checkout
@@ -137,6 +145,11 @@ public class DateUtils {
 		return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
+	/**
+	 * return today as ( dd/MM/yyyy )
+	 * 
+	 * @return
+	 */
 	public static String getToday() {
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -144,11 +157,12 @@ public class DateUtils {
 	}
 
 	/**
+	 * Returns days between two dates as a list of string
 	 * 
 	 * @param entity
 	 * @return
 	 */
-	public static List<String> setDays(BookingDTO dto) {
+	public static List<String> createListOfDays(BookingDTO dto) {
 		Date checkin = convertStringToDate(dto.getCheckin());
 		Date checkout = convertStringToDate(dto.getCheckout());
 		List<LocalDate> days = DateUtils.getDatesBetween(checkin, checkout);

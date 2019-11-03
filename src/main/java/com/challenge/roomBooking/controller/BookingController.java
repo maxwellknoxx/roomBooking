@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.challenge.roomBooking.entity.Booking;
+import com.challenge.roomBooking.exception.DateException;
+import com.challenge.roomBooking.exception.ResourceNotFoundException;
+import com.challenge.roomBooking.exception.RoomException;
 import com.challenge.roomBooking.model.BookingDTO;
+import com.challenge.roomBooking.service.impl.BookingCalendarServiceImpl;
 import com.challenge.roomBooking.service.impl.BookingServiceImpl;
-import com.challenge.roomBooking.service.impl.ServicesValidation;
 
 @RestController
 @RequestMapping("/api/")
@@ -29,91 +31,65 @@ public class BookingController {
 	private BookingServiceImpl service;
 
 	@Autowired
-	private ServicesValidation servicesValidation;
+	private BookingCalendarServiceImpl bookingCalendarService;
 
 	@PostMapping(path = "v1/booking/booking")
-	public ResponseEntity<?> booking(@Valid @RequestBody BookingDTO dto) {
-
-		BookingDTO booking = servicesValidation.prepareBooking(dto);
-		if (!booking.getRoomMessage().equals("")) {
-			return new ResponseEntity<String>(booking.getRoomMessage(), HttpStatus.OK);
-		} else if (!booking.getDateMessage().equals("")) {
-			return new ResponseEntity<String>(booking.getDateMessage(), HttpStatus.OK);
-		}
-
-		if (service.book(booking) == null) {
+	public ResponseEntity<?> booking(@Valid @RequestBody BookingDTO dto) throws DateException, RoomException {
+		BookingDTO booked = service.book(dto);
+		if (booked == null) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
+
 		return new ResponseEntity<String>(
-				"Room " + dto.getRoomId() + " reserved from: " + dto.getCheckin() + " to " + dto.getCheckout(),
+				roomBookedMessage(booked.getId(), booked.getRoomId(), booked.getCheckin(), booked.getCheckout()),
 				HttpStatus.CREATED);
 	}
 
-	@PutMapping(path = "v1/booking/bookings")
+	@PutMapping(path = "v1/booking/booking")
 	public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingDTO dto) {
+		bookingCalendarService.deleteByBookingId(dto.getId());
+		service.cancel(dto.getId());
 
-		return new ResponseEntity<String>("pensar nisso com carinho", HttpStatus.OK);
+		BookingDTO booked = service.book(dto);
+		if (booked == null) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<String>(roomBookedUpdatedMessage(booked.getId(), booked.getRoomId(), booked.getCheckin(),
+				booked.getCheckout()), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
-	public ResponseEntity<?> findAll() {
+	public ResponseEntity<?> findAll() throws ResourceNotFoundException {
 		List<BookingDTO> booking = service.findAll();
-		if (booking == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
-		}
+
 		return new ResponseEntity<List<BookingDTO>>(booking, HttpStatus.OK);
 	}
 
-	@GetMapping(path = "v1/booking/bookingById/{id}")
+	@GetMapping(path = "v1/booking/booking/{id}")
 	public ResponseEntity<?> bookingById(@Valid @PathVariable("id") Long id) {
 		BookingDTO booking = service.getBookingDTOById(id);
-		if (booking == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
-		}
+
 		return new ResponseEntity<BookingDTO>(booking, HttpStatus.OK);
 	}
 
-	@DeleteMapping(path = "v1/booking/bookings/{id}")
+	@DeleteMapping(path = "v1/booking/booking/{id}")
 	public ResponseEntity<?> cancel(@Valid @PathVariable("id") Long id) {
-		Booking booking = service.getBookingById(id);
-		if (booking == null) {
-			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
-		}
-		if (service.cancel(id)) {
-			return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-		}
-		return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+		service.cancel(id);
+		return new ResponseEntity<String>(bookCancelledMessage(id), HttpStatus.OK);
 	}
 
-	@PostMapping(path = "v1/booking/dates")
-	public ResponseEntity<?> dates(@Valid @RequestBody BookingDTO dto) {
-
-		if (servicesValidation.isValidPeriod(dto)) {
-			System.out.println("true");
-		} else {
-			System.out.println("false");
-		}
-
-		return new ResponseEntity<String>("pensar nisso com carinho", HttpStatus.OK);
+	public String roomBookedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number: " + bookingId + " Room " + roomId + " reserved from: " + checkin + " to " + checkout;
 	}
 
-	/**
-	 * 
-	 * @param id
-	 * @param bookedDays
-	 * @return
-	 */
-	public String roomValidaton(Long id, List<String> bookedDays) {
-		return servicesValidation.roomValidations(id, bookedDays);
+	public String roomBookedUpdatedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number updated: " + bookingId + " Room " + roomId + " reserved from: " + checkin + " to "
+				+ checkout;
 	}
 
-	/**
-	 * 
-	 * @param dto
-	 * @return
-	 */
-	public String dateValidation(BookingDTO dto) {
-		return servicesValidation.dateValidation(dto);
+	public String bookCancelledMessage(Long id) {
+		return "Booking " + id + " cancelled";
 	}
 
 }
