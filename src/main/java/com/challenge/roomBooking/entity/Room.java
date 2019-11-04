@@ -1,6 +1,5 @@
 package com.challenge.roomBooking.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -18,16 +17,22 @@ import javax.persistence.Table;
 import com.challenge.roomBooking.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "rooms")
 @Access(AccessType.FIELD)
+@EqualsAndHashCode(callSuper = false, exclude = {"bookings"})
+@ToString(exclude = {"bookings"})
 public class Room {
 
 	@Id
@@ -40,6 +45,6 @@ public class Room {
 	
 	@OneToMany(mappedBy = "room")
 	@JsonIgnore
-	private List<Booking> bookings = new ArrayList<>();
+	private List<Booking> bookings;
 	
 }

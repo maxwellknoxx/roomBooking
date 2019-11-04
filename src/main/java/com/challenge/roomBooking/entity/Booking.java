@@ -1,6 +1,5 @@
 package com.challenge.roomBooking.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,15 +14,21 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "bookings")
+@EqualsAndHashCode(callSuper = false, exclude = {"bookingsCalendar"})
+@ToString(exclude = {"bookingsCalendar"})
 public class Booking {
 
 	@Id
@@ -37,6 +42,6 @@ public class Booking {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "booking_id")
 	@JsonIgnore
-	private List<BookingCalendar> bookingsCalendar = new ArrayList<>();
+	private List<BookingCalendar> bookingsCalendar;
 
 }

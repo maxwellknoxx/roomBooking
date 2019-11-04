@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.challenge.roomBooking.entity.Booking;
-import com.challenge.roomBooking.entity.BookingCalendar;
 import com.challenge.roomBooking.entity.Room;
 import com.challenge.roomBooking.model.BookingDTO;
 
@@ -37,20 +36,9 @@ public class BookMapper {
 				.collect(Collectors.toList());
 	}
 
-	public static Booking parseDTOtoEntity(BookingDTO dto) {
-		Booking booking = new Booking();
-
-		Room room = new Room();
-		room.setId(dto.getRoomId());
-		room.setRoomType(dto.getRoomType());
-
-		booking.setRoom(room);
-
-		List<BookingCalendar> listBC = BookingCalendarMapper.parseListDTOtoListEntity(dto.getBookingsCalendar());
-
-		booking.setBookingsCalendar(listBC);
-
-		return booking;
+	public static Booking getEntity(BookingDTO dto) {
+		return Booking.builder().room(new Room(dto.getRoomId(), dto.getRoomType(), null))
+				.bookingsCalendar(BookingCalendarMapper.parseListDTOtoListEntity(dto.getBookingsCalendar())).build();
 	}
 
 }

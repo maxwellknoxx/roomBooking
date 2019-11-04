@@ -40,9 +40,8 @@ public class BookingController {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<String>(
-				roomBookedMessage(booked.getId(), booked.getRoomId(), booked.getCheckin(), booked.getCheckout()),
-				HttpStatus.CREATED);
+		return new ResponseEntity<String>(roomBookedMessage(booked.getId(), booked.getRoomId(),
+				booked.getCheckin(), booked.getCheckout()), HttpStatus.CREATED);
 	}
 
 	@PutMapping(path = "v1/booking/booking")
@@ -55,8 +54,8 @@ public class BookingController {
 			return new ResponseEntity<Boolean>(false, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<String>(roomBookedUpdatedMessage(booked.getId(), booked.getRoomId(), booked.getCheckin(),
-				booked.getCheckout()), HttpStatus.OK);
+		return new ResponseEntity<String>(roomBookedUpdatedMessage(booked.getId(), booked.getRoomId(),
+				booked.getCheckin(), booked.getCheckout()), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "v1/booking/bookings")
@@ -78,17 +77,18 @@ public class BookingController {
 		service.cancel(id);
 		return new ResponseEntity<String>(bookCancelledMessage(id), HttpStatus.OK);
 	}
-
-	public String roomBookedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
-		return "Booking number: " + bookingId + " Room " + roomId + " reserved from: " + checkin + " to " + checkout;
-	}
-
-	public String roomBookedUpdatedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
-		return "Booking number updated: " + bookingId + " Room " + roomId + " reserved from: " + checkin + " to "
+	
+	private String roomBookedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number: " + bookingId + " \nRoom: " + roomId + " \nReserve from: " + checkin + " to "
 				+ checkout;
 	}
 
-	public String bookCancelledMessage(Long id) {
+	private String roomBookedUpdatedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number updated: " + bookingId + " \nRoom: " + roomId + " \nReserve from: " + checkin + " to "
+				+ checkout;
+	}
+
+	private String bookCancelledMessage(Long id) {
 		return "Booking " + id + " cancelled";
 	}
 

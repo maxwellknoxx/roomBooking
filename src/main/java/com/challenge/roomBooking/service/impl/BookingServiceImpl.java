@@ -25,7 +25,7 @@ public class BookingServiceImpl implements BookingService {
 	private ServicesValidation servicesValidation;
 
 	@Override
-	public List<BookingDTO> findAll() {
+	public List<BookingDTO> findAll() throws ResourceNotFoundException {
 		List<Booking> entities = repository.findAll();
 		if (entities.isEmpty()) {
 			throw new ResourceNotFoundException(Booking.class, "No bookings found");
@@ -37,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDTO book(BookingDTO dto) throws RoomException, DateException {
 		BookingDTO booking = servicesValidation.prepareBooking(dto);
 
-		Booking entity = BookMapper.parseDTOtoEntity(booking);
+		Booking entity = BookMapper.getEntity(booking);
 		return BookMapper.getDTO(repository.save(entity));
 	}
 
@@ -53,19 +53,13 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	public Booking getBookingById(Long id) {
-		Booking bookingEntity = repository.findById(id).orElse(null);
-		if (bookingEntity == null) {
-			throw new EntityNotFoundException(Booking.class, "id", id.toString());
-		}
-		return bookingEntity;
+		return repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException(Booking.class, "id", id.toString()));
 	}
 
 	public BookingDTO getBookingDTOById(Long id) {
-		Booking bookingEntity = repository.findById(id).orElse(null);
-		if (bookingEntity == null) {
-			throw new EntityNotFoundException(Booking.class, "id", id.toString());
-		}
-		return BookMapper.getDTO(bookingEntity);
+		return BookMapper.getDTO(repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException(Booking.class, "id", id.toString())));
 	}
 
 }

@@ -28,27 +28,22 @@ public class BookingCalendarMapper {
 						.build())
 				.collect(Collectors.toList());
 	}
-	
-	public static BookingCalendar parseDTOtoEntity(BookingCalendarDTO dto) {
-		BookingCalendar bookingCalendar = new BookingCalendar();
-		
-		bookingCalendar.setCheckin(dto.getCheckin());
-		bookingCalendar.setCheckout(dto.getCheckout());
-		bookingCalendar.setDay(dto.getDay());
-		
-		return bookingCalendar;
+
+	public static BookingCalendar getEntity(BookingCalendarDTO dto) {
+		return BookingCalendar.builder().checkin(dto.getCheckin()).checkout(dto.getCheckout()).day(dto.getDay())
+				.build();
 	}
-	
-	public static List<BookingCalendar> parseListDTOtoListEntity(List<BookingCalendarDTO> listDTO){
-		
+
+	public static List<BookingCalendar> parseListDTOtoListEntity(List<BookingCalendarDTO> listDTO) {
+
 		List<BookingCalendar> listBC = new ArrayList<>();
 		BookingCalendar bookingCalendar;
-		for(BookingCalendarDTO dto : listDTO) {
+		for (BookingCalendarDTO dto : listDTO) {
 			bookingCalendar = new BookingCalendar();
-			bookingCalendar = parseDTOtoEntity(dto);
+			bookingCalendar = getEntity(dto);
 			listBC.add(bookingCalendar);
 		}
 		return listBC;
 	}
-	
+
 }

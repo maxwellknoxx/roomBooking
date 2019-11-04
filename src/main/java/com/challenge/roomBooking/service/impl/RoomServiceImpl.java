@@ -21,7 +21,7 @@ public class RoomServiceImpl implements RoomService {
 	private RoomRepository repository;
 
 	@Override
-	public List<RoomDTO> findAll() {
+	public List<RoomDTO> findAll() throws ResourceNotFoundException {
 		List<Room> entities = repository.findAll();
 		if (entities.isEmpty()) {
 			throw new ResourceNotFoundException(Room.class, "No room found");
@@ -45,15 +45,12 @@ public class RoomServiceImpl implements RoomService {
 		return RoomMapper.getDTO(roomEntity);
 	}
 
-	public RoomDTO getRoomById(Long id) {
-		Room roomEntity = repository.findById(id).orElse(null);
-		if (roomEntity == null) {
-			throw new EntityNotFoundException(Room.class, "id", id.toString());
-		}
-		return RoomMapper.getDTO(roomEntity);
+	public RoomDTO getRoomById(Long id) throws EntityNotFoundException {
+		return RoomMapper.getDTO(repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException(Room.class, "id", id.toString())));
 	}
 
-	public List<RoomDTO> getRoomByType(RoomType type) {
+	public List<RoomDTO> getRoomByType(RoomType type) throws EntityNotFoundException {
 		List<Room> entities = repository.findByRoomType(type);
 		if (entities.isEmpty()) {
 			throw new EntityNotFoundException(Room.class, "Type", type.toString());

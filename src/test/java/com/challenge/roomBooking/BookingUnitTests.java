@@ -71,7 +71,8 @@ class BookingUnitTests {
 
 		mockMvc.perform(delete("/api/v1/booking/booking/1").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentType("text/plain;charset=UTF-8"))
-				.andExpect(MockMvcResultMatchers.content().string("Booking 1 cancelled")).andDo(MockMvcResultHandlers.print());
+				.andExpect(MockMvcResultMatchers.content().string("Booking 1 cancelled"))
+				.andDo(MockMvcResultHandlers.print());
 	}
 
 	@Test
@@ -101,12 +102,13 @@ class BookingUnitTests {
 		mockMvc.perform(post("/api/v1/booking/booking").characterEncoding("utf-8")
 				.contentType(MediaType.APPLICATION_JSON).content(JSONUtils.objectToJSON(getRequestBookingDTO())))
 				.andExpect(status().isCreated())
-				
+
 				.andExpect(content().contentType("text/plain;charset=UTF-8"))
-				.andExpect(MockMvcResultMatchers.content().string("Booking number: 1 Room 1 reserved from: 25/11/2019 to 27/11/2019"))
+				.andExpect(
+						MockMvcResultMatchers.content().string(roomBookedMessage(1L, 1L, "25/11/2019", "27/11/2019")))
 				.andDo(MockMvcResultHandlers.print());
 	}
-	
+
 	@Test
 	public void shouldUpdate() throws Exception {
 
@@ -115,9 +117,10 @@ class BookingUnitTests {
 		mockMvc.perform(put("/api/v1/booking/booking").characterEncoding("utf-8")
 				.contentType(MediaType.APPLICATION_JSON).content(JSONUtils.objectToJSON(getRequestBookingDTO())))
 				.andExpect(status().isOk())
-				
+
 				.andExpect(content().contentType("text/plain;charset=UTF-8"))
-				.andExpect(MockMvcResultMatchers.content().string("Booking number updated: 2 Room 1 reserved from: 26/11/2019 to 29/11/2019"))
+				.andExpect(MockMvcResultMatchers.content()
+						.string(roomBookedUpdatedMessage(2L, 1L, "26/11/2019", "29/11/2019")))
 				.andDo(MockMvcResultHandlers.print());
 	}
 
@@ -160,7 +163,7 @@ class BookingUnitTests {
 
 		return bookingDTO;
 	}
-	
+
 	public BookingDTO getResponseUpdateBookingDTO() {
 		BookingDTO bookingDTO = new BookingDTO();
 		BookingCalendarDTO bookingCalendarDTO = new BookingCalendarDTO();
@@ -242,6 +245,16 @@ class BookingUnitTests {
 	public List<LocalDate> getDatesBetween() {
 		return DateUtils.getDatesBetween(DateUtils.convertStringToDate("25/11/2019"),
 				DateUtils.convertStringToDate("27/11/2019"));
+	}
+
+	private String roomBookedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number: " + bookingId + " \nRoom: " + roomId + " \nReserve from: " + checkin + " to "
+				+ checkout;
+	}
+
+	private String roomBookedUpdatedMessage(Long bookingId, Long roomId, String checkin, String checkout) {
+		return "Booking number updated: " + bookingId + " \nRoom: " + roomId + " \nReserve from: " + checkin + " to "
+				+ checkout;
 	}
 
 }
